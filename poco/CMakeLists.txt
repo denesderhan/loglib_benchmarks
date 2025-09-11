@@ -37,8 +37,8 @@ target_include_directories(poco PRIVATE
 # Dependencies
 ################################################################################
 
-find_package(logbench REQUIRED)
-find_package(Poco REQUIRED COMPONENTS Foundation)
+find_package(logbench CONFIG REQUIRED)
+find_package(Poco CONFIG REQUIRED COMPONENTS Foundation)
 
 target_link_libraries(poco
 	PRIVATE Poco::Foundation

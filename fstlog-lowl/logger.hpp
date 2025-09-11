@@ -14,6 +14,7 @@
 
 #include <fstlog/version.hpp>
 #include <fstlog/core.hpp>
+#include <fstlog/logger/logger_st.hpp>
 #include <fstlog/logger/logger_st_fix.hpp>
 #include <fstlog/logger/log_policy_lowlatency.hpp>
 #include <fstlog/formatter/formatter_txt_fast.hpp>
@@ -21,6 +22,8 @@
 #include <fstlog/sink/sink_null.hpp>
 #include <fstlog/sink/sink_sort.hpp>
 #include <fstlog/sink/sink_unsort.hpp>
+
+using log_level = decltype(std::declval<fstlog::logger_st>().level());
 
 class logger {
 public:
@@ -34,7 +37,7 @@ public:
 	//FIX THIS use std::forward args?
 	template<typename... Args>
 	LOGBENCH_FORCEINLINE void log_test1(Args const& ...args) {
-		logger_instance_.log<fstlog::level::Info, fstlog::log_policy_lowlatency,
+		logger_instance_.log<log_level::Info, fstlog::log_policy_lowlatency,
 			fstlog::ut_cast(fstlog::log_metaargs::File) | fstlog::ut_cast(fstlog::log_metaargs::Line)>(
 			__FILE__, __LINE__, "Thr: {} Log_n: {} Time: {} {} {}", args...);
 	}
@@ -94,7 +97,7 @@ public:
 			throw std::runtime_error("Formatter type not supported!");
 		}
 
-		fstlog::filter filter{ fstlog::level::All, 1};
+		fstlog::filter filter{ log_level::All, 1};
 
 		auto out_file = fstlog::output_file(log_file.c_str(), true);
 		
@@ -130,7 +133,7 @@ public:
 		if (init_data.log_self) {
 			std::string self_log_file{init_data.temp_path };
 			self_log_file += "/background.log.txt";
-			fstlog::filter filter_bck{ fstlog::level::All, 0 };
+			fstlog::filter filter_bck{ log_level::All, 0 };
 			core_instance_.add_sink(
 				fstlog::sink_sort(
 					fstlog::formatter_txt_fast(),
@@ -147,11 +150,15 @@ public:
 	}
 
 	static constexpr std::string_view lib_name() noexcept {
-		return "fstlog-lowl";
+		return "fstlog-st-fast-lowl";
 	}
 
-	static constexpr std::string_view lib_version() noexcept {
+	static std::string_view lib_version() noexcept {
+#ifdef FSTLOG_VERSION
 		return FSTLOG_VERSION;
+#else
+		return fstlog::version();
+#endif
 	}
 	
 private:
@@ -163,6 +170,6 @@ private:
 	inline static fstlog::core core_instance_;
 	fstlog::logger_st_fix < 
 		fstlog::small_string<16>{"logger"}, 
-		fstlog::level::Trace,
+		log_level::Trace,
 		1> logger_instance_;
 };

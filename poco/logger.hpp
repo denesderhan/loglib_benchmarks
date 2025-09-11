@@ -12,6 +12,7 @@
 #include <string_view>
 #include <string>
 
+#include <Poco/Environment.h>
 #include <Poco/AsyncChannel.h>
 #include <Poco/FormattingChannel.h>
 #include <Poco/Logger.h>
@@ -40,6 +41,21 @@ public:
 		logbench::test_in_param const& init_data,
 		logbench::test_out_param& out_data)
 	{
+		auto version = Poco::Environment::libraryVersion();
+		/// Returns the POCO C++ Libraries version as a hexadecimal
+		/// number in format 0xAABBCCDD, where
+		///    - AA is the major version number,
+		///    - BB is the minor version number,
+		///    - CC is the revision number, and
+		///    - DD is the patch level number.
+		int patch = version & 0xFF;
+		int rev = (version >> 8) & 0xFF;
+		int minor = (version >> 16) & 0xFF;
+		int major = (version >> 24) & 0xFF;
+		version_ = std::to_string(major) + "."
+			+ std::to_string(minor) + "."
+			+ std::to_string(rev) + "." +
+			std::to_string(patch);
 		out_data.lib_name = lib_name();
 		out_data.lib_version = lib_version();
 		out_data.formatter_type = init_data.formatter_type;
@@ -107,9 +123,10 @@ public:
 	}
 
 	static std::string_view lib_version() {
-		return "0.0.0";
+		return version_;
 	}
 
 	inline static std::string log_templ_{"%Y-%m-%d %H:%M:%S.%i %t"};
+	inline static std::string version_{"0.0.0.0"};
 	Poco::Logger& logger_instance_;
 };

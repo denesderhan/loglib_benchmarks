@@ -6,7 +6,7 @@
  */
 ]]
 find_package(Threads REQUIRED)
-find_package(logbench REQUIRED)
+find_package(logbench CONFIG REQUIRED)
 
 set(src
     "p7.cpp"
@@ -50,11 +50,11 @@ else()
 endif()
 
 find_library(P7_LIBRARY 
-	NAMES p7 P7x64
-	PATHS "$ENV{P7_LIB_PATH}"
+    NAMES p7 P7 p7x64 P7x64 
+    PATHS "$ENV{P7_LIB_PATH}"
 )
 if(NOT P7_LIBRARY)
-	message(ERROR "Baical P7 library not found, set environment variable P7_LIB_PATH!")
+    message(ERROR "Baical P7 library not found, set environment variable P7_LIB_PATH!")
 endif()
 
 target_link_libraries(p7b PRIVATE

@@ -22,10 +22,12 @@ set(ALL_FILES
     ${src}
     ${includes}
 )
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR}/fstlog-st)
-set(CMAKE_PDB_OUTPUT_DIRECTORY ${OUT_DIR}/fstlog-st)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR}/fstlog)
+set(CMAKE_PDB_OUTPUT_DIRECTORY ${OUT_DIR}/fstlog)
 add_executable(fstlog-st ${ALL_FILES})
-set_target_properties(fstlog-st PROPERTIES 
+set_target_properties(fstlog-st PROPERTIES
+    OUTPUT_NAME "fstlog-v${FSTLOG_VERSION}-st" 
 	DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
 )
 
@@ -37,8 +39,8 @@ target_include_directories(fstlog-st PRIVATE
 # Dependencies
 ################################################################################
 
-find_package(logbench REQUIRED)
-find_package(fstlog REQUIRED)
+find_package(logbench CONFIG REQUIRED)
+find_package(fstlog CONFIG REQUIRED)
 
 target_link_libraries(fstlog-st
 	PRIVATE fstlog::fstlog

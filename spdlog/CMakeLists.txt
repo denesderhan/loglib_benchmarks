@@ -24,12 +24,12 @@ set(ALL_FILES
 )
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR}/spdlog)
 set(CMAKE_PDB_OUTPUT_DIRECTORY ${OUT_DIR}/spdlog)
-add_executable(spdlog ${ALL_FILES})
-set_target_properties(spdlog PROPERTIES 
+add_executable(spdlogv1 ${ALL_FILES})
+set_target_properties(spdlogv1 PROPERTIES 
 	DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
 )
 
-target_include_directories(spdlog PRIVATE
+target_include_directories(spdlogv1 PRIVATE
 	"./"
 )
 
@@ -37,10 +37,10 @@ target_include_directories(spdlog PRIVATE
 # Dependencies
 ################################################################################
 
-find_package(logbench REQUIRED)
-find_package(spdlog REQUIRED)
+find_package(logbench CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
 
-target_link_libraries(spdlog
+target_link_libraries(spdlogv1
 	PRIVATE spdlog::spdlog
     PRIVATE logbench::logbench
 )

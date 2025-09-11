@@ -24,12 +24,13 @@ set(ALL_FILES
 )
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR}/fstlog)
 set(CMAKE_PDB_OUTPUT_DIRECTORY ${OUT_DIR}/fstlog)
-add_executable(fstlog ${ALL_FILES})
-set_target_properties(fstlog PROPERTIES 
+add_executable(fstlog-tloc ${ALL_FILES})
+set_target_properties(fstlog-tloc PROPERTIES
+    OUTPUT_NAME "fstlog-v${FSTLOG_VERSION}-tloc"
 	DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
 )
 
-target_include_directories(fstlog PRIVATE
+target_include_directories(fstlog-tloc PRIVATE
 	"./"
 )
 
@@ -40,7 +41,7 @@ target_include_directories(fstlog PRIVATE
 find_package(logbench REQUIRED)
 find_package(fstlog REQUIRED)
 
-target_link_libraries(fstlog
+target_link_libraries(fstlog-tloc
 	PRIVATE fstlog::fstlog
     PRIVATE logbench::logbench
 )

@@ -18,7 +18,7 @@
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
-static_assert(SPDLOG_VER_MAJOR == 1);
+static_assert(SPDLOG_VER_MAJOR == 1, "Bad version!");
 
 class logger {
 public:

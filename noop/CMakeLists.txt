@@ -5,7 +5,6 @@
  * SPDX-License-Identifier: MIT
  */
 ]]
-find_package(Threads REQUIRED)
 
 set(src
     "noop.cpp"
@@ -37,7 +36,8 @@ target_include_directories(noop PRIVATE
 # Dependencies
 ################################################################################
 
-find_package(logbench REQUIRED)
+find_package(Threads REQUIRED)
+find_package(logbench CONFIG REQUIRED)
 
 target_link_libraries(noop
     PRIVATE logbench::logbench

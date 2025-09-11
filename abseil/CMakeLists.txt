@@ -37,7 +37,7 @@ target_include_directories(abseil PRIVATE
 # Dependencies
 ################################################################################
 
-find_package(logbench REQUIRED)
+find_package(logbench CONFIG REQUIRED)
 find_package(absl CONFIG REQUIRED)
 
 target_link_libraries(abseil PRIVATE 

@@ -22,6 +22,8 @@
 #include <fstlog/sink/sink_sort.hpp>
 #include <fstlog/sink/sink_unsort.hpp>
 
+using log_level = decltype(std::declval<fstlog::logger_mt>().level());
+
 class logger {
 public:
 	logger(int id = 0) noexcept {}
@@ -89,7 +91,7 @@ public:
 			throw std::runtime_error("Formatter type not supported!");
 		}
 
-		fstlog::filter filter{ fstlog::level::All, 1};
+		fstlog::filter filter{ log_level::All, 1};
 
 		auto out_file = fstlog::output_file(log_file.c_str(), true);
 		
@@ -125,7 +127,7 @@ public:
 		if (init_data.log_self) {
 			std::string self_log_file{init_data.temp_path };
 			self_log_file += "/background.log.txt";
-			fstlog::filter filter_bck{ fstlog::level::All, 0 };
+			fstlog::filter filter_bck{ log_level::All, 0 };
 			core_instance_.add_sink(
 				fstlog::sink_sort(
 					fstlog::formatter_txt(),
@@ -140,11 +142,15 @@ public:
 	}
 
 	static constexpr std::string_view lib_name() noexcept {
-		return "fstlog-logger-mt";
+		return "fstlog-mt";
 	}
 
-	static constexpr std::string_view lib_version() noexcept {
+	static std::string_view lib_version() noexcept {
+#ifdef FSTLOG_VERSION
 		return FSTLOG_VERSION;
+#else
+		return fstlog::version();
+#endif
 	}
 	
 private:

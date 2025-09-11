@@ -35,8 +35,8 @@ target_include_directories(boost PRIVATE
 # Dependencies
 ################################################################################
 
-find_package(logbench REQUIRED)
-find_package(boost_log REQUIRED)
+find_package(logbench CONFIG REQUIRED)
+find_package(boost_log CONFIG REQUIRED)
 
 target_link_libraries(boost
 	PRIVATE Boost::log

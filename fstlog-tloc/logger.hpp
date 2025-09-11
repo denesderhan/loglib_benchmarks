@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 #pragma once
+#include <type_traits>
 #include <string_view>
 #include <stdexcept>
 #include <string>
@@ -22,13 +23,37 @@
 #include <fstlog/sink/sink_sort.hpp>
 #include <fstlog/sink/sink_unsort.hpp>
 
+using log_level = decltype(std::declval<fstlog::logger>().level());
+
+template<class T, class = void>
+struct has_member_new_buffer : std::false_type {};
+
+template<class T>
+struct has_member_new_buffer<T, std::void_t<
+	decltype(std::declval<T&>().new_buffer(std::declval<std::uint32_t>()))>> : std::true_type {};
+
+template<typename L,
+	std::enable_if_t<has_member_new_buffer<L>::value, int> = 0>
+inline void init_buffer(L& logger, std::uint32_t size) {
+	logger.new_buffer(size);
+}
+
+template<typename L,
+	std::enable_if_t<!has_member_new_buffer<L>::value, int> = 0>
+inline void init_buffer(L& logger, std::uint32_t size) {
+	auto core = logger.get_core();
+	logger.new_buffer(core, size);
+}
+
 class logger {
 public:
-	logger(int id = 0) noexcept { 
-		fstlog::logger::new_buffer(core_instance_, buffer_size_);
+	logger(int id = 0) noexcept {
+
+		init_buffer(logger_instance_, buffer_size_);
+						
 		std::string thr_name{ "thread_" };
 		thr_name += std::to_string(id);
-		fstlog::logger::set_thread(thr_name.c_str());
+		logger_instance_.set_thread(thr_name.c_str());
 	}
 	~logger() noexcept = default;
 	
@@ -93,7 +118,7 @@ public:
 			throw std::runtime_error("Formatter type not supported!");
 		}
 
-		fstlog::filter filter{ fstlog::level::All, 1};
+		fstlog::filter filter{ log_level::All, 1};
 
 		auto out_file = fstlog::output_file(log_file.c_str(), true);
 		
@@ -129,7 +154,7 @@ public:
 		if (init_data.log_self) {
 			std::string self_log_file{init_data.temp_path };
 			self_log_file += "/background.log.txt";
-			fstlog::filter filter_bck{ fstlog::level::All, 0 };
+			fstlog::filter filter_bck{ log_level::All, 0 };
 			core_instance_.add_sink(
 				fstlog::sink_sort(
 					fstlog::formatter_txt(),
@@ -144,11 +169,15 @@ public:
 	}
 
 	static constexpr std::string_view lib_name() noexcept {
-		return "fstlog";
+		return "fstlog-thrlocal";
 	}
 
-	static constexpr std::string_view lib_version() noexcept {
+	static std::string_view lib_version() noexcept {
+#ifdef FSTLOG_VERSION
 		return FSTLOG_VERSION;
+#else
+		return fstlog::version();
+#endif
 	}
 	
 private:

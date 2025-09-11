@@ -5,13 +5,14 @@
  */
 #pragma once
 #include <g3log/g3log.hpp>
-#include <g3log/logworker.hpp>
 #include <g3log/logmessage.hpp>
+#include <g3log/logworker.hpp>
 
-#include <stdexcept>
-#include <string_view>
-#include <string>
 #include <cassert>
+#include <cinttypes>
+#include <stdexcept>
+#include <string>
+#include <string_view>
 
 #include <logbench/force_inline.hpp>
 #include <logbench/test_in_param.hpp>
@@ -28,7 +29,7 @@ public:
 
 	template<typename... Args>
 	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		LOGF(INFO, "Thr: %d Log_n: %llu Time: %llu %f %f", args...);
+		LOGF(INFO, "Thr: %d Log_n: %" PRIu64 " Time: %" PRIu64 " %f %f", args...);
 	}
 
 	static void set_time_template(std::string_view templ)  noexcept {

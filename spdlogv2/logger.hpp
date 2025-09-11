@@ -6,9 +6,10 @@
 #pragma once
 
 #include <spdlog/spdlog.h>
+#include <spdlog/version.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/null_sink.h>
-#include <spdlog/async.h>
+#include <spdlog/sinks/async_sink.h>
 
 #include <stdexcept>
 #include <string_view>
@@ -18,23 +19,20 @@
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
-static_assert(SPDLOG_VER_MAJOR == 2);
+static_assert(SPDLOG_VER_MAJOR == 2, "Bad version!");
 
 class logger {
 public:
 	logger(int id = 0) {
 		std::string logger_name("logger_");
 		logger_name += std::to_string(id);
-		logger_instance_ = std::make_shared<spdlog::async_logger>(
-			logger_name, sink_, spdlog::thread_pool(), spdlog::async_overflow_policy::block);
-		spdlog::register_logger(logger_instance_);
+		logger_instance_ = std::make_shared<spdlog::logger>(logger_name, sink_);
 	}
 	~logger() {}
 
 	template<typename... Args>
 	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		logger_instance_->log(spdlog::source_loc{ __FILE__, __LINE__, SPDLOG_FUNCTION }, spdlog::level::info, "Thr: {} Log_n: {} Time: {} {} {}", args...);
-		//SPDLOG_LOGGER_INFO(logger_instance_, "Thr: {} Log_n: {} Time: {} {} {}", args...);
+		logger_instance_->info("Thr: {} Log_n: {} Time: {} {} {}", args...);
 	}
 
 	static void set_log_template(std::string_view templ)  noexcept {
@@ -51,14 +49,15 @@ public:
 		out_data.sink_type = init_data.sink_type;
 		out_data.garbage_lines = 0;
 
+		spdlog::sinks::async_sink::config conf;
+		conf.policy = spdlog::sinks::async_sink::overflow_policy::block;
 		if (init_data.lib_buffer_size != -1) {
 			//FIX THIS adjust / 82 to desired Mb mem used! (define it in test??)
-			spdlog::init_thread_pool((uint64_t(init_data.lib_buffer_size) * 1024  * init_data.thread_num) / 82, 1);
+			conf.queue_size = (uint64_t(init_data.lib_buffer_size) * 1024 * init_data.thread_num) / 82;
 			out_data.lib_buffer_size = init_data.lib_buffer_size;
 		}
 		else {
-			spdlog::init_thread_pool(spdlog::details::default_async_q_size, 1);
-			out_data.lib_buffer_size = (spdlog::details::default_async_q_size * 82) / (size_t(1024) * init_data.thread_num);
+			out_data.lib_buffer_size = (conf.queue_size * 82) / (size_t(1024) * init_data.thread_num);
 		}
 
 		if (init_data.buffer_flush_time != -1) {
@@ -82,8 +81,11 @@ public:
 			sink_ = std::make_shared<spdlog::sinks::null_sink_mt>();
 		}
 		else if (out_data.sink_type == logbench::sink_typ::sort) {
-			sink_ = std::make_shared<spdlog::sinks::basic_file_sink_st>(log_file, true);
-			sink_->set_pattern(log_templ_);
+			conf.sinks.emplace_back(std::make_shared<
+				spdlog::sinks::basic_file_sink_mt>(log_file, true));
+			conf.sinks.back()->set_pattern(log_templ_);
+			sink_ = std::make_shared<spdlog::sinks::async_sink>(
+				std::move(conf));
 		}
 		else {
 			throw std::runtime_error("Sink type not supported!");

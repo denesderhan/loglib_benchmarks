@@ -38,8 +38,8 @@ target_include_directories(g3logb PRIVATE
 # Dependencies
 ################################################################################
 
-find_package(logbench REQUIRED)
-find_package(g3log REQUIRED)
+find_package(logbench CONFIG REQUIRED)
+find_package(g3log CONFIG REQUIRED)
 
 target_link_libraries(g3logb PRIVATE 
     g3log

@@ -7,13 +7,21 @@
 //#define NON_BLOCKING
 #define FMT_UNICODE 0
 #include <log4cxx/log4cxx.h>
-#include <log4cxx/basicconfigurator.h>
+
 #include <log4cxx/appenderskeleton.h>
-#include <log4cxx/helpers/stringhelper.h>
-#include <log4cxx/logger.h>
-#include <log4cxx/xml/domconfigurator.h>
+#include <log4cxx/basicconfigurator.h>
+#include <log4cxx/helpers/class.h>
+#include <log4cxx/helpers/classregistration.h>
 #include <log4cxx/helpers/exception.h>
+#include <log4cxx/helpers/object.h>
+#include <log4cxx/helpers/pool.h>
+#include <log4cxx/helpers/stringhelper.h>
 #include <log4cxx/helpers/transcoder.h>
+#include <log4cxx/logstring.h>
+#include <log4cxx/spi/loggingevent.h>
+#include <log4cxx/xml/domconfigurator.h>
+
+#include <log4cxx/logger.h>
 #if LOG4CXX_USING_STD_FORMAT
 #include <format>
 #else
@@ -30,7 +38,7 @@
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
-namespace LOG4CXX_NS {
+namespace log4cxx {
 
 	class NullWriterAppender : public AppenderSkeleton {
 	public:
@@ -41,6 +49,7 @@ namespace LOG4CXX_NS {
 		END_LOG4CXX_CAST_MAP()
 
 		NullWriterAppender() {}
+                virtual ~NullWriterAppender() {}
 
 		void close() override {}
 
@@ -65,7 +74,6 @@ namespace LOG4CXX_NS {
 	};
 
 	IMPLEMENT_LOG4CXX_OBJECT(NullWriterAppender)
-
 }
 
 class logger {

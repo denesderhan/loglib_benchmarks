@@ -22,10 +22,11 @@ set(ALL_FILES
     ${src}
     ${includes}
 )
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR}/fstlog-lowl)
-set(CMAKE_PDB_OUTPUT_DIRECTORY ${OUT_DIR}/fstlog-lowl)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR}/fstlog)
+set(CMAKE_PDB_OUTPUT_DIRECTORY ${OUT_DIR}/fstlog)
 add_executable(fstlog-lowl ${ALL_FILES})
-set_target_properties(fstlog-lowl PROPERTIES 
+set_target_properties(fstlog-lowl PROPERTIES
+    OUTPUT_NAME "fstlog-v${FSTLOG_VERSION}-lowl"
 	DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
 )
 
@@ -37,8 +38,8 @@ target_include_directories(fstlog-lowl PRIVATE
 # Dependencies
 ################################################################################
 
-find_package(logbench REQUIRED)
-find_package(fstlog REQUIRED)
+find_package(logbench CONFIG REQUIRED)
+find_package(fstlog CONFIG REQUIRED)
 
 target_link_libraries(fstlog-lowl
 	PRIVATE fstlog::fstlog

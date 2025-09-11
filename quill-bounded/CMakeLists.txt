@@ -29,7 +29,7 @@ set_target_properties(quill-bounded PROPERTIES
 	DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
 )
 
-find_path(QUILL_INCLUDE_DIRS "quill/Backend.h")
+find_path(QUILL_INCLUDE_DIRS "quill/Logger.h")
 target_include_directories(quill-bounded PRIVATE
 	"./"
 	${QUILL_INCLUDE_DIRS}
@@ -39,7 +39,7 @@ target_include_directories(quill-bounded PRIVATE
 # Dependencies
 ################################################################################
 
-find_package(logbench REQUIRED)
+find_package(logbench CONFIG REQUIRED)
 
 target_link_libraries(quill-bounded
     PRIVATE logbench::logbench
