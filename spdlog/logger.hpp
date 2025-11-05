@@ -33,7 +33,7 @@ public:
 
 	template<typename... Args>
 	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		SPDLOG_LOGGER_INFO(logger_instance_, "Thr: {} Log_n: {} Time: {} {} {}", args...);
+		SPDLOG_LOGGER_INFO(logger_instance_, "Thr: {} Log_n: {} Time: {} {} {}", std::forward<Args>(args)...);
 	}
 
 	static void set_log_template(std::string_view templ)  noexcept {

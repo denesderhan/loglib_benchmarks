@@ -30,7 +30,7 @@ public:
 
 	template<typename... Args>
 	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		logger_instance_.information(Poco::format("Thr: %?d Log_n: %?d Time: %?d %f %hf", args...), __FILE__, __LINE__);
+		logger_instance_.information(Poco::format("Thr: %?d Log_n: %?d Time: %?d %f %hf", std::forward<Args>(args)...), __FILE__, __LINE__);
 	}
 
 	static void set_log_template(std::string_view templ)  noexcept {

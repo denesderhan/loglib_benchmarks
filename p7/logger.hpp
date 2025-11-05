@@ -44,7 +44,7 @@ public:
 
 	template<typename... Args>
 	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		p7_trace_->P7_INFO(NULL, TM("Thr: %d Log_n: %llu Time: %llu %f %f"), args...);
+		p7_trace_->P7_INFO(NULL, TM("Thr: %d Log_n: %llu Time: %llu %f %f"), std::forward<Args>(args)...);
 	}
 
 	static void set_log_template(std::string_view templ)  noexcept {

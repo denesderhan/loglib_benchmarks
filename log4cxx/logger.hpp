@@ -83,7 +83,7 @@ public:
 
 	template<typename... Args>
 	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		LOG4CXX_INFO_FMT(logger_, "Thr: {} Log_n: {} Time: {} {} {}", args...);
+		LOG4CXX_INFO_FMT(logger_, "Thr: {} Log_n: {} Time: {} {} {}", std::forward<Args>(args)...);
 	}
 
 	static void set_log_template(std::string_view templ) {

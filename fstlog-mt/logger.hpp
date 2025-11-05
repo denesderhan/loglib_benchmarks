@@ -29,10 +29,9 @@ public:
 	logger(int id = 0) noexcept {}
 	~logger() noexcept = default;
 	
-	//FIX THIS use std::forward args?
 	template<typename... Args>
-	LOGBENCH_FORCEINLINE void log_test1(Args const& ...args) {
-		LOG_INFO(logger_instance_, "Thr: {} Log_n: {} Time: {} {} {}", args...);
+	LOGBENCH_FORCEINLINE void log_test1(Args && ...args) {
+		LOG_INFO(logger_instance_, "Thr: {} Log_n: {} Time: {} {} {}", std::forward<Args>(args)...);
 	}
 
 	static void set_log_template_txt(std::string_view templ) noexcept {

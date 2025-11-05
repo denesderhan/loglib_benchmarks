@@ -27,7 +27,7 @@ public:
 
 	template<typename... Args>
 	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		LOG_INFO(logger_instance_, "Thr: {} Log_n: {} Time: {} {} {}" , args...);
+		LOG_INFO(logger_instance_, "Thr: {} Log_n: {} Time: {} {} {}" , std::forward<Args>(args)...);
 	}
 
 	struct log_templ {

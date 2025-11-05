@@ -34,12 +34,11 @@ public:
 	{}
 	~logger() noexcept = default;
 	
-	//FIX THIS use std::forward args?
 	template<typename... Args>
-	LOGBENCH_FORCEINLINE void log_test1(Args const& ...args) {
+	LOGBENCH_FORCEINLINE void log_test1(Args && ...args) {
 		logger_instance_.log<log_level::Info, fstlog::log_policy_lowlatency,
 			fstlog::ut_cast(fstlog::log_metaargs::File) | fstlog::ut_cast(fstlog::log_metaargs::Line)>(
-			__FILE__, __LINE__, "Thr: {} Log_n: {} Time: {} {} {}", args...);
+			__FILE__, __LINE__, "Thr: {} Log_n: {} Time: {} {} {}", std::forward<Args>(args)...);
 	}
 
 	static void set_log_template_txt(std::string_view templ) noexcept {
