@@ -17,7 +17,6 @@
 #include <fstream>
 #include <mutex>
 
-#include <logbench/force_inline.hpp>
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
@@ -55,10 +54,10 @@ public:
 	logger(int id = 0) {}
 	~logger() {}
 
-	LOGBENCH_FORCEINLINE void log_test1(int id, uint64_t i, uint64_t call_time, double d, float f) {
-		LOG(INFO) << __FILE__ << "Thr: " << id << " Log_n: " << i << " Time: " << call_time << ' ' << d << ' ' << f;
+	auto& logger_impl() {
+		return null_instance_;
 	}
-	
+		
 	static void sys_init(
 		logbench::test_in_param const& init_data,
 		logbench::test_out_param& out_data)
@@ -114,7 +113,6 @@ public:
 			
 		}
 		
-
 		absl::InitializeLog();
 		absl::SetStderrThreshold(absl::LogSeverityAtLeast::kFatal);
 		absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
@@ -140,6 +138,7 @@ public:
 		return abseil_version_;
 	}
 
+	inline static int null_instance_{ 0 };
 	inline static file_sink sink_;
 	inline static null_sink null_sink_;
 	inline static const std::string abseil_version_{
@@ -147,6 +146,15 @@ public:
 		+ '.' + std::to_string(ABSL_LTS_RELEASE_PATCH_LEVEL)
 	};
 };
+
+#define LOGBENCH_LOGCALL_STREAM
+
+#define LOGBENCH_LOG_TRACE(logger) LOG(INFO) << __FILE__
+#define LOGBENCH_LOG_DEBUG(logger) LOG(INFO) << __FILE__
+#define LOGBENCH_LOG_INFO(logger) LOG(INFO) << __FILE__
+#define LOGBENCH_LOG_WARN(logger) LOG(WARNING) << __FILE__
+#define LOGBENCH_LOG_ERROR(logger) LOG(ERROR) << __FILE__
+#define LOGBENCH_LOG_FATAL(logger) LOG(FATAL) << __FILE__
 
 /*
 If you are familiar with the Google Logging (glog) library, 

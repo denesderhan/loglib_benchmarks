@@ -15,7 +15,6 @@
 #include <string_view>
 #include <string>
 
-#include <logbench/force_inline.hpp>
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
@@ -30,9 +29,8 @@ public:
 	}
 	~logger() {}
 
-	template<typename... Args>
-	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		logger_instance_->info("Thr: {} Log_n: {} Time: {} {} {}", std::forward<Args>(args)...);
+	auto& logger_impl() {
+		return logger_instance_;
 	}
 
 	static void set_log_template(std::string_view templ)  noexcept {
@@ -126,3 +124,12 @@ public:
 		+ "." + std::to_string(SPDLOG_VER_MINOR)
 		+ "." + std::to_string(SPDLOG_VER_PATCH) };
 };
+
+#define LOGBENCH_LOGCALL_FMT
+
+#define LOGBENCH_LOG_TRACE(logger, ...) logger.logger_impl()->trace(__VA_ARGS__)
+#define LOGBENCH_LOG_DEBUG(logger, ...) logger.logger_impl()->debug(__VA_ARGS__)
+#define LOGBENCH_LOG_INFO(logger, ...) logger.logger_impl()->info(__VA_ARGS__)
+#define LOGBENCH_LOG_WARN(logger, ...) logger.logger_impl()->warn(__VA_ARGS__)
+#define LOGBENCH_LOG_ERROR(logger, ...) logger.logger_impl()->error(__VA_ARGS__)
+#define LOGBENCH_LOG_FATAL(logger, ...) logger.logger_impl()->critical(__VA_ARGS__)

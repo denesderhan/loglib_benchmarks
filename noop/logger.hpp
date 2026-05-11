@@ -6,7 +6,6 @@
 #pragma once
 #include <string_view>
 
-#include <logbench/force_inline.hpp>
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
@@ -30,8 +29,9 @@ public:
 	}
 	static void sys_stop() noexcept {}
 
-	template<typename... Args>
-	LOGBENCH_FORCEINLINE void log_test1([[maybe_unused]] Args &&... args) {}
+	auto& logger_impl() {
+		return null_instance_;
+	}
 	
 	static constexpr std::string_view lib_name() noexcept {
 		return "noop";
@@ -40,4 +40,15 @@ public:
 	static constexpr std::string_view lib_version() noexcept {
 		return "0.0.0";
 	}
+
+	inline static int null_instance_{ 0 };
 };
+
+#define LOGBENCH_LOGCALL_FMT
+
+#define LOGBENCH_LOG_TRACE(logger)
+#define LOGBENCH_LOG_DEBUG(logger)
+#define LOGBENCH_LOG_INFO(logger)
+#define LOGBENCH_LOG_WARN(logger)
+#define LOGBENCH_LOG_ERROR(logger)
+#define LOGBENCH_LOG_FATAL(logger)

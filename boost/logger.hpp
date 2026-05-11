@@ -5,7 +5,6 @@
  */
 #pragma once
 
-#include <logbench/force_inline.hpp>
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
@@ -49,12 +48,8 @@ public:
 	logger([[maybe_unused]] int id = 0) {}
 	~logger() {}
 
-	//log function for test1
-	LOGBENCH_FORCEINLINE void log_test1(int id, uint64_t i, uint64_t call_time, double d, float f) {
-		BOOST_LOG_SEV(logger_, logging::trivial::severity_level::error) 
-			<< __FILE__ << ':' << __LINE__ 
-			<< " Thr: " << id << " Log_n: " << i << " Time: " 
-			<< call_time << ' ' << d << ' ' << f;
+	auto& logger_impl() {
+		return logger_;
 	}
 
 	static void sys_init(
@@ -154,3 +149,18 @@ public:
 		+ "." + std::to_string(BOOST_VERSION % 100)
 	};
 };
+
+#define LOGBENCH_LOGCALL_STREAM
+
+#define LOGBENCH_LOG_TRACE(logger) BOOST_LOG_SEV(logger.logger_impl(), logging::trivial::severity_level::trace) \
+<< __FILE__ << ':' << __LINE__
+#define LOGBENCH_LOG_DEBUG(logger) BOOST_LOG_SEV(logger.logger_impl(), logging::trivial::severity_level::debug) \
+<< __FILE__ << ':' << __LINE__
+#define LOGBENCH_LOG_INFO(logger) BOOST_LOG_SEV(logger.logger_impl(), logging::trivial::severity_level::info) \
+<< __FILE__ << ':' << __LINE__
+#define LOGBENCH_LOG_WARN(logger) BOOST_LOG_SEV(logger.logger_impl(), logging::trivial::severity_level::warning) \
+<< __FILE__ << ':' << __LINE__
+#define LOGBENCH_LOG_ERROR(logger) BOOST_LOG_SEV(logger.logger_impl(), logging::trivial::severity_level::error) \
+<< __FILE__ << ':' << __LINE__
+#define LOGBENCH_LOG_FATAL(logger) BOOST_LOG_SEV(logger.logger_impl(), logging::trivial::severity_level::fatal) \
+<< __FILE__ << ':' << __LINE__

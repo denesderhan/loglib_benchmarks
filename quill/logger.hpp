@@ -16,7 +16,6 @@
 #include <string_view>
 #include <string>
 
-#include <logbench/force_inline.hpp>
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
@@ -25,9 +24,8 @@ public:
 	logger(int id = 0) {}
 	~logger() {}
 
-	template<typename... Args>
-	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		LOG_INFO(logger_instance_, "Thr: {} Log_n: {} Time: {} {} {}" , std::forward<Args>(args)...);
+	auto& logger_impl() {
+		return logger_instance_;
 	}
 
 	struct log_templ {
@@ -127,3 +125,12 @@ public:
 		+ '.' + std::to_string(quill::VersionPatch)
 	};
 };
+
+#define LOGBENCH_LOGCALL_FMT
+
+#define LOGBENCH_LOG_TRACE(logger, fmt, ...) LOG_TRACE_L1(logger.logger_impl(), fmt, __VA_ARGS__)
+#define LOGBENCH_LOG_DEBUG(logger, fmt, ...) LOG_DEBUG(logger.logger_impl(), fmt, __VA_ARGS__)
+#define LOGBENCH_LOG_INFO(logger, fmt, ...) LOG_INFO(logger.logger_impl(), fmt, __VA_ARGS__)
+#define LOGBENCH_LOG_WARN(logger, fmt, ...) LOG_WARNING(logger.logger_impl(), fmt, __VA_ARGS__)
+#define LOGBENCH_LOG_ERROR(logger, fmt, ...) LOG_ERROR(logger.logger_impl(), fmt, __VA_ARGS__)
+#define LOGBENCH_LOG_FATAL(logger, fmt, ...) LOG_CRITICAL(logger.logger_impl(), fmt, __VA_ARGS__)

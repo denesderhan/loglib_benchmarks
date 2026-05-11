@@ -14,7 +14,6 @@
 #include <string>
 #include <string_view>
 
-#include <logbench/force_inline.hpp>
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
@@ -27,9 +26,8 @@ public:
 	logger(int id = 0) {}
 	~logger() {}
 
-	template<typename... Args>
-	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		LOGF(INFO, "Thr: %d Log_n: %" PRIu64 " Time: %" PRIu64 " %f %f", std::forward<Args>(args)...);
+	auto& logger_impl() {
+		return null_instance_;
 	}
 
 	static void set_time_template(std::string_view templ)  noexcept {
@@ -116,4 +114,14 @@ public:
 	inline static std::string time_templ_{"%Y-%m-%d %H:%M:%S.%f3 "};
 	inline static uint32_t logger_buffer_size_{ 0 };
 	inline static g3::LogWorker* worker_;
+	inline static int null_instance_{0};
 };
+
+#define LOGBENCH_LOGCALL_PRINTF
+
+#define LOGBENCH_LOG_TRACE(logger, ...) LOGF(DEBUG, __VA_ARGS__)
+#define LOGBENCH_LOG_DEBUG(logger, ...) LOGF(DEBUG, __VA_ARGS__)
+#define LOGBENCH_LOG_INFO(logger, ...) LOGF(INFO, __VA_ARGS__)
+#define LOGBENCH_LOG_WARN(logger, ...) LOGF(WARNING, __VA_ARGS__)
+#define LOGBENCH_LOG_ERROR(logger, ...) LOGF(WARNING, __VA_ARGS__)
+#define LOGBENCH_LOG_FATAL(logger, ...) LOGF(FATAL, __VA_ARGS__)

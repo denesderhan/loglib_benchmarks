@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSL-1.0
  */
 #pragma once
-#include <logbench/force_inline.hpp>
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
@@ -28,9 +27,8 @@ public:
 	{}
 	~logger() {}
 
-	template<typename... Args>
-	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		logger_instance_.information(Poco::format("Thr: %?d Log_n: %?d Time: %?d %f %hf", std::forward<Args>(args)...), __FILE__, __LINE__);
+	auto& logger_impl() {
+		return logger_instance_;
 	}
 
 	static void set_log_template(std::string_view templ)  noexcept {
@@ -130,3 +128,18 @@ public:
 	inline static std::string version_{"0.0.0.0"};
 	Poco::Logger& logger_instance_;
 };
+
+#define LOGBENCH_LOGCALL_PRINTF_CUSTOM
+
+#define CUSTOM_FMT_INT32 "%?d"
+#define CUSTOM_FMT_UINT64 "%?d"
+#define CUSTOM_FMT_FLOAT "%hf"
+#define CUSTOM_FMT_DOUBLE "%f"
+
+#define LOGBENCH_LOG_TRACE(logger, ...) logger.logger_impl().trace(Poco::format(__VA_ARGS__), __FILE__, __LINE__)
+#define LOGBENCH_LOG_DEBUG(logger, ...) logger.logger_impl().debug(Poco::format(__VA_ARGS__), __FILE__, __LINE__)
+#define LOGBENCH_LOG_INFO(logger, ...) logger.logger_impl().information(Poco::format(__VA_ARGS__), __FILE__, __LINE__)
+#define LOGBENCH_LOG_WARN(logger, ...) logger.logger_impl().warning(Poco::format(__VA_ARGS__), __FILE__, __LINE__)
+#define LOGBENCH_LOG_ERROR(logger, ...) logger.logger_impl().error(Poco::format(__VA_ARGS__), __FILE__, __LINE__)
+#define LOGBENCH_LOG_FATAL(logger, ...) logger.logger_impl().fatal(Poco::format(__VA_ARGS__), __FILE__, __LINE__)
+

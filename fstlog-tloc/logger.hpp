@@ -9,7 +9,6 @@
 #include <stdexcept>
 #include <string>
 
-#include <logbench/force_inline.hpp>
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
@@ -57,9 +56,8 @@ public:
 	}
 	~logger() noexcept = default;
 	
-	template<typename... Args>
-	LOGBENCH_FORCEINLINE void log_test1(Args && ...args) {
-		LOG_INFO(logger_instance_, "Thr: {} Log_n: {} Time: {} {} {}", std::forward<Args>(args)...);
+	auto& logger_impl() {
+		return logger_instance_;
 	}
 
 	static void set_log_template_txt(std::string_view templ) noexcept {
@@ -188,3 +186,13 @@ private:
 	inline static fstlog::core core_instance_;
 	inline static fstlog::logger logger_instance_{ core_instance_, "logger" };
 };
+
+#define LOGBENCH_LOGCALL_FMT
+
+#define LOGBENCH_LOG_TRACE(logger, ...) LOG_TRACE(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_DEBUG(logger, ...) LOG_DEBUG(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_INFO(logger, ...) LOG_INFO(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_WARN(logger, ...) LOG_WARN(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_ERROR(logger, ...) LOG_ERROR(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_FATAL(logger, ...) LOG_FATAL(logger.logger_impl(), __VA_ARGS__)
+

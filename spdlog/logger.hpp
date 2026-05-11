@@ -31,9 +31,8 @@ public:
 	}
 	~logger() {}
 
-	template<typename... Args>
-	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		SPDLOG_LOGGER_INFO(logger_instance_, "Thr: {} Log_n: {} Time: {} {} {}", std::forward<Args>(args)...);
+	auto& logger_impl() {
+		return logger_instance_;
 	}
 
 	static void set_log_template(std::string_view templ)  noexcept {
@@ -123,3 +122,12 @@ public:
 		+ "." + std::to_string(SPDLOG_VER_MINOR)
 		+ "." + std::to_string(SPDLOG_VER_PATCH) };
 };
+
+#define LOGBENCH_LOGCALL_FMT
+
+#define LOGBENCH_LOG_TRACE(logger, ...) SPDLOG_LOGGER_TRACE(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_DEBUG(logger, ...) SPDLOG_LOGGER_DEBUG(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_INFO(logger, ...) SPDLOG_LOGGER_INFO(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_WARN(logger, ...) SPDLOG_LOGGER_WARN(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_ERROR(logger, ...) SPDLOG_LOGGER_ERROR(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_FATAL(logger, ...) SPDLOG_LOGGER_CRITICAL(logger.logger_impl(), __VA_ARGS__)

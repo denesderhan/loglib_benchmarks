@@ -14,7 +14,6 @@
 #include <P7/P7_Trace.h>
 #include <P7/P7_Client.h>
 #include <P7/P7_Version.h>
-#include <logbench/force_inline.hpp>
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
@@ -42,9 +41,8 @@ public:
 		p7_client_share_->Release();
 	}
 
-	template<typename... Args>
-	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		p7_trace_->P7_INFO(NULL, TM("Thr: %d Log_n: %llu Time: %llu %f %f"), std::forward<Args>(args)...);
+	auto& logger_impl() {
+		return *p7_trace_;
 	}
 
 	static void set_log_template(std::string_view templ)  noexcept {
@@ -184,6 +182,15 @@ public:
 	IP7_Trace* p7_trace_{ nullptr };
 	IP7_Client* p7_client_share_{ nullptr };
 };
+
+#define LOGBENCH_LOGCALL_PRINTF
+
+#define LOGBENCH_LOG_TRACE(logger, fmt, ...) logger.logger_impl().P7_TRACE(NULL, TM(fmt), __VA_ARGS__)
+#define LOGBENCH_LOG_DEBUG(logger, fmt, ...) logger.logger_impl().P7_DEBUG(NULL, TM(fmt), __VA_ARGS__)
+#define LOGBENCH_LOG_INFO(logger, fmt, ...) logger.logger_impl().P7_INFO(NULL, TM(fmt), __VA_ARGS__)
+#define LOGBENCH_LOG_WARN(logger, fmt, ...) logger.logger_impl().P7_WARNING(NULL, TM(fmt), __VA_ARGS__)
+#define LOGBENCH_LOG_ERROR(logger, fmt, ...) logger.logger_impl().P7_ERROR(NULL, TM(fmt), __VA_ARGS__)
+#define LOGBENCH_LOG_FATAL(logger, fmt, ...) logger.logger_impl().P7_CRITICAL(NULL, TM(fmt), __VA_ARGS__)
 
 /*
 “/P7.Format” – set log item format for text sink, consists of next sub-elements

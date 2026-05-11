@@ -34,7 +34,6 @@
 #include <string>
 #include <fstream>
 
-#include <logbench/force_inline.hpp>
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
@@ -81,9 +80,8 @@ public:
 	logger(int id = 0) {}
 	~logger() {}
 
-	template<typename... Args>
-	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		LOG4CXX_INFO_FMT(logger_, "Thr: {} Log_n: {} Time: {} {} {}", std::forward<Args>(args)...);
+	auto& logger_impl() {
+		return logger_;
 	}
 
 	static void set_log_template(std::string_view templ) {
@@ -228,3 +226,12 @@ R"(	<param name="Blocking" value="true"/>
 	inline static log4cxx::LoggerPtr logger_ = log4cxx::Logger::getRootLogger();
 	inline static size_t buffer_size_{ 0 };
 };
+
+#define LOGBENCH_LOGCALL_FMT
+
+#define LOGBENCH_LOG_TRACE(logger, ...) LOG4CXX_TRACE_FMT(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_DEBUG(logger, ...) LOG4CXX_DEBUG_FMT(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_INFO(logger, ...) LOG4CXX_INFO_FMT(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_WARN(logger, ...) LOG4CXX_WARN_FMT(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_ERROR(logger, ...) LOG4CXX_ERROR_FMT(logger.logger_impl(), __VA_ARGS__)
+#define LOGBENCH_LOG_FATAL(logger, ...) LOG4CXX_FATAL_FMT(logger.logger_impl(), __VA_ARGS__)

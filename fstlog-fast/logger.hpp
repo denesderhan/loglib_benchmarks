@@ -8,7 +8,6 @@
 #include <stdexcept>
 #include <string>
 
-#include <logbench/force_inline.hpp>
 #include <logbench/test_in_param.hpp>
 #include <logbench/test_out_param.hpp>
 
@@ -34,11 +33,8 @@ public:
 	{}
 	~logger() noexcept = default;
 
-	template<typename... Args>
-	LOGBENCH_FORCEINLINE void log_test1(Args &&... args) {
-		logger_instance_.log<log_level::Info, fstlog::log_policy_guaranteed,
-			fstlog::ut_cast(fstlog::log_metaargs::File) | fstlog::ut_cast(fstlog::log_metaargs::Line)>(
-			__FILE__, __LINE__, "Thr: {} Log_n: {} Time: {} {} {}", std::forward<Args>(args)...);
+	auto& logger_impl() {
+		return logger_instance_;
 	}
 
 	static void set_log_template_txt(std::string_view templ) noexcept {
@@ -170,3 +166,29 @@ private:
 		log_level::Trace,
 		1> logger_instance_;
 };
+
+#define LOGBENCH_LOGCALL_FMT
+
+#define LOGBENCH_LOG_TRACE(logger, ...) logger.logger_impl().log<log_level::Trace, fstlog::log_policy_guaranteed, \
+fstlog::ut_cast(fstlog::log_metaargs::File) | fstlog::ut_cast(fstlog::log_metaargs::Line)>( \
+	__FILE__, __LINE__, __VA_ARGS__)
+
+#define LOGBENCH_LOG_DEBUG(logger, ...) logger.logger_impl().log<log_level::Debug, fstlog::log_policy_guaranteed, \
+fstlog::ut_cast(fstlog::log_metaargs::File) | fstlog::ut_cast(fstlog::log_metaargs::Line)>( \
+	__FILE__, __LINE__, __VA_ARGS__)
+
+#define LOGBENCH_LOG_INFO(logger, ...) logger.logger_impl().log<log_level::Info, fstlog::log_policy_guaranteed, \
+fstlog::ut_cast(fstlog::log_metaargs::File) | fstlog::ut_cast(fstlog::log_metaargs::Line)>( \
+	__FILE__, __LINE__, __VA_ARGS__)
+
+#define LOGBENCH_LOG_WARN(logger, ...) logger.logger_impl().log<log_level::Warn, fstlog::log_policy_guaranteed, \
+fstlog::ut_cast(fstlog::log_metaargs::File) | fstlog::ut_cast(fstlog::log_metaargs::Line)>( \
+	__FILE__, __LINE__, __VA_ARGS__)
+
+#define LOGBENCH_LOG_ERROR(logger, ...) logger.logger_impl().log<log_level::Error, fstlog::log_policy_guaranteed, \
+fstlog::ut_cast(fstlog::log_metaargs::File) | fstlog::ut_cast(fstlog::log_metaargs::Line)>( \
+	__FILE__, __LINE__, __VA_ARGS__)
+
+#define LOGBENCH_LOG_FATAL(logger, ...) logger.logger_impl().log<log_level::Fatal, fstlog::log_policy_guaranteed, \
+fstlog::ut_cast(fstlog::log_metaargs::File) | fstlog::ut_cast(fstlog::log_metaargs::Line)>( \
+	__FILE__, __LINE__, __VA_ARGS__)
